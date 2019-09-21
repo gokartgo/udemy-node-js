@@ -1,18 +1,7 @@
 const Product = require('../models/product');
-const Order = require('../models/order');
 
 const getProducts = (req, res, next) => {
-    // Product.fetchAll((products) => {
-    //     // console.log('products', products)
-    //     res.render('shop/product-list',
-    //         {
-    //             prods: products,
-    //             pageTitle: 'All Products',
-    //             path: '/products',
-    //         });
-    //     // layout: false special key that understood hbs not use default layout
-    // });
-    Product.findAll()
+    Product.fetchAll()
         .then((products) => {
             res.render('shop/product-list',
                 {
@@ -27,15 +16,7 @@ const getProducts = (req, res, next) => {
 }
 
 const getIndex = (req, res, next) => {
-    // Product.fetchAll((products) => {
-    //     // console.log('products', products)
-    //     res.render('shop/index', {
-    //         prods: products,
-    //         pageTitle: 'Shop',
-    //         path: '/',
-    //     });
-    //     // layout: false special key that understood hbs not use default layout
-    Product.findAll().then(products => {
+    Product.fetchAll().then(products => {
         res.render('shop/index', {
             prods: products,
             pageTitle: 'Shop',
