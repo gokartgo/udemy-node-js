@@ -1,7 +1,6 @@
 // const routes = require('./routes');
 // const http = require('http');
 const path = require('path');
-const path2 = require('./util/path')
 const express = require('express');
 const bodyParser = require('body-parser');
 // const expressHbs = require('express-handlebars');
@@ -36,13 +35,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-    User.findById('5d628e27516ed129e0a76470')
+    User.findById('5d99b962d9ec9a9ec9d02c80')
         .then(user => {
-            req.user = user;
+            req.user = new User(user.name, user.email, user.cart, user._id);
             next();
         })
         .catch(err => console.log(err));
-    next();
 })
 
 app.use('/admin', adminRoutes.router);
@@ -52,8 +50,7 @@ app.use(shopRoutes);
 // const server = http.createServer(app);
 
 // server.listen(9000);
-console.log(__dirname)
-console.log(path2)
+console.log(__dirname);
 app.use(errorController.get404Page);
 
 mongoConnect(() => {

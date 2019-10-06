@@ -2,12 +2,13 @@ const mongodb = require('mongodb');
 const getDb = require('../util/database').getDb;
 
 class Product {
-    constructor(title, price, description, imageUrl, id) {
+    constructor(title, price, description, imageUrl, id, userId) {
         this.title = title;
         this.price = price;
         this.description = description;
-        this.imageUrl = imageUrl
+        this.imageUrl = imageUrl;
         this._id = id ? new mongodb.ObjectId(id) : null
+        this.userId = userId;
     }
 
     save() {
@@ -16,7 +17,7 @@ class Product {
         if (this._id) {
             dbOp = db.collection('products').updateOne({ _id: this._id }, { $set: this })
             // use $set for update value if not use ex have {id name surname}
-            // this have only {id test} value in database will change be {id test}
+            // if this have only {id test}. value in database will change be {id test}
             // if use $set  value in database will change be {id name surname test}
         } else {
             dbOp = db.collection('products').insertOne(this);
