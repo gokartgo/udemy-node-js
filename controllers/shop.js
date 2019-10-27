@@ -1,8 +1,9 @@
 const Product = require('../models/product');
 
 const getProducts = (req, res, next) => {
-    Product.fetchAll()
+    Product.find()
         .then((products) => {
+            console.log(products);
             res.render('shop/product-list', {
                 prods: products,
                 pageTitle: 'All Products',
@@ -15,7 +16,7 @@ const getProducts = (req, res, next) => {
 }
 
 const getIndex = (req, res, next) => {
-    Product.fetchAll().then(products => {
+    Product.find().then(products => {
         res.render('shop/index', {
             prods: products,
             pageTitle: 'Shop',
@@ -92,22 +93,7 @@ const getProduct = (req, res, next) => {
     const {
         productId = ''
     } = req.params;
-    // Product.findById(productId, product => {
-    //     res.render('shop/product-detail', { product, pageTitle: product.title, path: '/products' })
-    // });'
-    // Product.findAll({
-    //     where: {
-    //         id: productId
-    //     }
-    // })
-    //     .then((product) => {
-    //         console.log('product', product)
-    //         res.render('shop/product-detail', { product: product[0], pageTitle: product[0].title, path: '/products' })
-    //     })
-    //     .catch(err => {
-    //         console.log(err)
-    //     })
-    Product.findByPk(productId)
+    Product.findById(productId)
         .then((product) => {
             res.render('shop/product-detail', {
                 product,
@@ -124,6 +110,7 @@ const getProduct = (req, res, next) => {
 const postCart = (req, res, next) => {
     const prodId = req.body.productId;
     Product.findById(prodId).then(product => {
+        console.log('this user', req.user)
         return req.user.addToCart(product);
     }).then(result => {
         console.log(result)

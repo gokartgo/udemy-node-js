@@ -15,11 +15,17 @@ const getAddProduct = (req, res, next) => {
 const postAddProduct = (req, res, next) => {
     const {
         title = '',
-        imageUrl = '',
-        price = 0,
-        description = '',
+            imageUrl = '',
+            price = 0,
+            description = '',
     } = req.body;
-    const product = new Product(title, price, description, imageUrl, null, req.user._id)
+    const product = new Product({
+        title,
+        price,
+        description,
+        imageUrl,
+        userId: req.user,
+    })
     product
         .save()
         .then(result => {
@@ -63,22 +69,24 @@ const postEditProduct = (req, res, next) => {
     const updatedPrice = req.body.price;
     const updatedImageUrl = req.body.imageUrl;
     const updatedDesc = req.body.description;
-    console.log('a ', prodId)
-    console.log('b ', new ObjectId(prodId))
-    const product = new Product(updatedTitle, updatedPrice, updatedDesc, updatedImageUrl, prodId)
-    product.save()
-        .then(result => {
+    Product.findById(prodId).then(product => {
+            product.title = updatedTitle;
+            product.price = updatedPrice;
+            product.description = updatedDesc;
+            product.imageUrl = updatedImageUrl;
+            return product.save();
+        }).then(result => {
             console.log('update product!');
             res.redirect('/admin/products');
         })
         .catch(err => {
             console.log(err);
-        })
+        });
 }
 
 const postDeleteProducts = (req, res, next) => {
     const prodId = req.params.productId;
-    Product.deleteById(prodId)
+    Product.findByIdAndRemove(prodId)
         .then(() => {
             console.log('destroyed product');
             res.redirect('/admin/products');
@@ -87,9 +95,11 @@ const postDeleteProducts = (req, res, next) => {
 }
 
 const getProducts = (req, res, next) => {
-    Product.fetchAll()
+    Product.find()
+        // .select('title price -_id')
+        // .populate('userId')
         .then((products) => {
-            // console.log('products', products)
+            console.log('products', products)
             res.render('admin/products', {
                 prods: products,
                 pageTitle: 'Admin Products',
