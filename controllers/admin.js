@@ -96,8 +96,8 @@ const postDeleteProducts = (req, res, next) => {
 
 const getProducts = (req, res, next) => {
     Product.find()
-        // .select('title price -_id')
-        // .populate('userId')
+        // .select('title price -_id') select only title price and cancel _id
+        // .populate('userId', 'name email -_id')
         .then((products) => {
             console.log('products', products)
             res.render('admin/products', {

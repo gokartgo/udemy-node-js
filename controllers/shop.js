@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const Order = require('../models/order')
 
 const getProducts = (req, res, next) => {
     Product.find()
@@ -30,12 +31,13 @@ const getIndex = (req, res, next) => {
 
 const getCart = (req, res, next) => {
     req.user
-        .getCart()
-        .then(products => {
+        .populate('cart.items.productId')
+        .execPopulate()
+        .then(user => {
             return res.render('shop/cart', {
                 path: '/cart',
                 pageTitle: 'Your Cart',
-                products
+                products: user.cart.items
             })
         })
         .catch(err => {
@@ -63,10 +65,29 @@ const getCart = (req, res, next) => {
 }
 
 const postOrder = (req, res, next) => {
-    let fetchedCart;
     req.user
-        .addOrder()
-        .then(result => {
+        .populate('cart.items.productId')
+        .execPopulate()
+        .then(user => {
+            const products = user.cart.items.map(i => {
+                return {
+                    product: {
+                        ...i.productId._doc
+                    }, // if separate productId only will get another data from mongoose then we add _doc for get only data of productId
+                    quantity: i.quantity
+                }
+            });
+            const order = new Order({
+                user: {
+                    name: req.user.name,
+                    userId: req.user // only object mongoose will auto pick id
+                },
+                products
+            })
+            return order.save()
+        }).then(result => {
+            return req.user.clearCart()
+        }).then(() => {
             res.redirect('/orders');
         })
         .catch(err => {
@@ -75,7 +96,9 @@ const postOrder = (req, res, next) => {
 }
 
 const getOrders = (req, res, next) => {
-    req.user.getOrders()
+    Order.find({
+            "user.userId": req.user._id
+        })
         .then(orders => {
             console.log('getOrder orders', orders)
             res.render('shop/orders', {
@@ -120,7 +143,7 @@ const postCart = (req, res, next) => {
 
 const postCartDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
-    req.user.deleteItemFromCart(prodId)
+    req.user.removeFromCart(prodId)
         .then(result => {
             res.redirect('/cart');
         })

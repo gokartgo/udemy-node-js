@@ -1,0 +1,24 @@
+version: "3"
+
+networks:
+  nodejs:
+
+services:
+  mysql:
+    image: mysql:5.7.22
+    container_name: gokart-mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: homestead
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+      SERVICE_TAGS: dev
+      SERVICE_NAME: gokart-mysql
+    networks:
+      - nodejs
