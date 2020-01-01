@@ -9,6 +9,7 @@ const getAddProduct = (req, res, next) => {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
         editing: false,
+        isAuthenticated: req.isLoggedIn,
     })
 }
 
@@ -55,7 +56,8 @@ const getEditProduct = (req, res, next) => {
                 pageTitle: 'Edit Product',
                 path: '/admin/edit-product',
                 editing: editMode,
-                product
+                product,
+                isAuthenticated: req.isLoggedIn
             })
         })
         .catch(err => {
@@ -104,6 +106,7 @@ const getProducts = (req, res, next) => {
                 prods: products,
                 pageTitle: 'Admin Products',
                 path: '/admin/products',
+                isAuthenticated: req.isLoggedIn
             });
         }).catch(err => {
             console.log(err);
