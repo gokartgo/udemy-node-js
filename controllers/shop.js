@@ -17,7 +17,7 @@ const getProducts = (req, res, next) => {
 };
 
 const getIndex = (req, res, next) => {
-    console.log(req.session.user)
+    console.log(req.user)
     Product.find()
         .then(products => {
             res.render("shop/index", {
@@ -33,7 +33,7 @@ const getIndex = (req, res, next) => {
 };
 
 const getCart = (req, res, next) => {
-    req.session.user
+    req.user
         .populate("cart.items.productId")
         .execPopulate()
         .then(user => {
@@ -69,7 +69,7 @@ const getCart = (req, res, next) => {
 };
 
 const postOrder = (req, res, next) => {
-    req.session.user
+    req.user
         .populate("cart.items.productId")
         .execPopulate()
         .then(user => {
@@ -83,15 +83,15 @@ const postOrder = (req, res, next) => {
             });
             const order = new Order({
                 user: {
-                    name: req.session.user.name,
-                    userId: req.session.user // only object mongoose will auto pick id
+                    name: req.user.name,
+                    userId: req.user // only object mongoose will auto pick id
                 },
                 products
             });
             return order.save();
         })
         .then(result => {
-            return req.session.user.clearCart();
+            return req.user.clearCart();
         })
         .then(() => {
             res.redirect("/orders");
@@ -103,7 +103,7 @@ const postOrder = (req, res, next) => {
 
 const getOrders = (req, res, next) => {
     Order.find({
-            "user.userId": req.session.user._id
+            "user.userId": req.user._id
         })
         .then(orders => {
             console.log("getOrder orders", orders);
@@ -142,8 +142,8 @@ const postCart = (req, res, next) => {
     const prodId = req.body.productId;
     Product.findById(prodId)
         .then(product => {
-            console.log("this user", req.session.user);
-            return req.session.user.addToCart(product);
+            console.log("this user", req.user);
+            return req.user.addToCart(product);
         })
         .then(result => {
             console.log(result);
@@ -153,7 +153,7 @@ const postCart = (req, res, next) => {
 
 const postCartDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
-    req.session.user
+    req.user
         .removeFromCart(prodId)
         .then(result => {
             res.redirect("/cart");
