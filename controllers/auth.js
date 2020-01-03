@@ -1,12 +1,18 @@
 const User = require("../models/user");
 
 const getLogin = (req, res, next) => {
-    console.log(req.session)
-    console.log(req.session.isLoggedIn)
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Login',
-        isAuthenticated: req.session.isLoggedIn,
+        isAuthenticated: false,
+    })
+}
+
+const getSignup = (req, res, next) => {
+    res.render('auth/signup', {
+        path: '/signup',
+        pageTitle: 'Signup',
+        isAuthenticated: false,
     })
 }
 
@@ -23,6 +29,10 @@ const postLogin = (req, res, next) => {
         .catch(err => console.log(err));
 }
 
+const postSignup = (req, res, next) => {
+
+}
+
 const postLogout = (req, res, next) => {
     req.session.destroy(err => {
         console.log(err)
@@ -32,6 +42,8 @@ const postLogout = (req, res, next) => {
 
 module.exports = {
     getLogin,
+    getSignup,
     postLogin,
+    postSignup,
     postLogout,
 }
