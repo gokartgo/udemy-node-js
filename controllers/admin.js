@@ -73,6 +73,9 @@ const postEditProduct = (req, res, next) => {
     const updatedImageUrl = req.body.imageUrl;
     const updatedDesc = req.body.description;
     Product.findById(prodId).then(product => {
+            if (product.userId !== req.user._id) {
+                return res.redirect('/')
+            }
             product.title = updatedTitle;
             product.price = updatedPrice;
             product.description = updatedDesc;
@@ -89,7 +92,10 @@ const postEditProduct = (req, res, next) => {
 
 const postDeleteProducts = (req, res, next) => {
     const prodId = req.params.productId;
-    Product.findByIdAndRemove(prodId)
+    Product.deleteOne({
+            _id: prodId,
+            userId: req.user._id
+        })
         .then(() => {
             console.log('destroyed product');
             res.redirect('/admin/products');
@@ -98,9 +104,7 @@ const postDeleteProducts = (req, res, next) => {
 }
 
 const getProducts = (req, res, next) => {
-    Product.find({
-            userId: req.user._id
-        })
+    Product.find()
         // .select('title price -_id') select only title price and cancel _id
         // .populate('userId', 'name email -_id')
         .then((products) => {
