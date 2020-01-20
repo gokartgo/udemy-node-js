@@ -73,7 +73,7 @@ const postEditProduct = (req, res, next) => {
     const updatedImageUrl = req.body.imageUrl;
     const updatedDesc = req.body.description;
     Product.findById(prodId).then(product => {
-            if (product.userId !== req.user._id) {
+            if (product.userId.toString() !== req.user._id.toString()) {
                 return res.redirect('/')
             }
             product.title = updatedTitle;
@@ -104,7 +104,9 @@ const postDeleteProducts = (req, res, next) => {
 }
 
 const getProducts = (req, res, next) => {
-    Product.find()
+    Product.find({
+        userId: req.user._id
+    })
         // .select('title price -_id') select only title price and cancel _id
         // .populate('userId', 'name email -_id')
         .then((products) => {
