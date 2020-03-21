@@ -13,7 +13,7 @@ router.get("/login", authController.getLogin);
 router.get("/signup", authController.getSignup);
 
 router.post("/login", [
-    check("email")
+    check("email") // check from all around ex header,body,cookie
     .isEmail()
     .withMessage("Please Enter a Valid E-mail")
     .custom((value, {
@@ -31,7 +31,7 @@ router.post("/login", [
     body(
         "password",
         "Please enter password only numbers and text and at least 5 characters"
-    )
+    ) // check from body
     .isLength({
         min: 5
     })
