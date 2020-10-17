@@ -1,0 +1,14 @@
+version: '2.0'  # if no version is specified then v1 is assumed. Recommend v2 minimum
+
+services:  # containers. same as docker run
+  udemy_mysql: # a friendly name. this is also DNS name inside network
+    image: mysql:latest
+    # use command because in mysql 8 default-authentication is caching_sha2_password that cause cannot connect by username and password. this cmd is switch default-authen in mysql
+    command: mysqld --default-authentication-plugin=mysql_native_password
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_USER=user
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=node-complete
+      - MYSQL_PASSWORD=password
